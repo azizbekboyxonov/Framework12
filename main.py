@@ -1,0 +1,109 @@
+import json
+from app import Frameworkapp
+
+app = Frameworkapp()
+
+
+def load_user():
+    with open("user.json", "r") as file:
+        return json.load(file)
+
+
+def load_azizbek():
+    with open("azizbek.json", "r") as file:
+        data = json.load(file)
+    return data
+
+
+def save_azizbek(data):
+    with open("azizbek.json", "w") as file:
+        json.dump(data, file, indent=4)
+
+
+def save_user(users):
+    with open("user.json", "w") as file:
+        json.dump(users, file, indent=4)
+
+
+@app.route("/home")
+def home(request, response):
+    data = load_azizbek()
+    data["azizbek"] += 1
+    save_azizbek(data)
+    response.text = f"Home pagedan uyquli salom! - {data['azizbek']}"
+
+
+@app.route("/about")
+def about(request, response):
+    data = load_azizbek()
+    data["azizbek2"] += 1
+    save_azizbek(data)
+    response.text = f"About paged salom! - {data['azizbek2']}"
+
+
+@app.route("/u/{id}")
+def get_info(request, response, id):
+    users = load_user()
+
+    if id not in users:
+        users[id] = {"view": 1}
+    else:
+        users[id]["view"] += 1
+
+    save_user(users)
+
+    user = users.get(id, "Bunday user yo‘q!")
+    response.text = json.dumps(user)
+
+
+@app.route("/muhammadyusuf")
+def astro(request, response):
+    response.content_type = "text/html"
+    response.text = """
+        <img src="/muhammadyusuf/image" width="300"><br>
+        <h2>G'aybullayev Muhammad Yusuf</h2>
+        <p>Yoshi: 17 da<br>
+        Qiziqish: Video o'yinlar<br>
+        Hobby: Kod yozish<br>
+        Kasb: Dasturchi<br>
+        Kitobi: Strong Feelings, Strong Views</p>
+    """
+
+
+@app.route("/muhammadyusuf/image")
+def astro_image(request, response):
+    try:
+        path = r"C:\Users\user\Desktop\muhammadyusuf2.jpg"
+        with open(path, "rb") as f:
+            content = f.read()
+        response.body = content
+        response.content_type = "image/jpeg"
+    except FileNotFoundError:
+        response.status = 404
+        response.text = "Rasm topilmadi."
+
+
+@app.route("/abdulloh")
+def abu(request, response):
+    response.content_type = "text/html"
+    response.text = """
+        <img src="/abdulloh/image" width="300"><br>
+        <h2>Arslonov Abdulloh</h2>
+        <p>Yoshi: 17 da<br>
+        Hobby: Cycling<br>
+        Kasb: Teacher<br>
+        Kitobi: Strong Feelings, Strong Views</p>
+    """
+
+
+@app.route("/abdulloh/image")
+def abu_image(request, response):
+    try:
+        path = r"C:\Users\user\Desktop\Abdulloh2.jpg"
+        with open(path, "rb") as f:
+            content = f.read()
+        response.body = content
+        response.content_type = "image/jpeg"
+    except FileNotFoundError:
+        response.status = 404
+        response.text = "Rasm topilmadi."
